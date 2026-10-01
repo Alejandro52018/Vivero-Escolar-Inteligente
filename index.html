@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body>
+    
+  </body>
+</html>
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, #16a34a 0%, #84cc16 50%, #a16207 100%);
+        min-height: 100vh; padding: 2rem;
+      }
+      .container { max-width: 1100px; margin: 0 auto; }
+      h1 { color: white; text-align: center; margin-bottom: 0.5rem; font-size: 2.5rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
+      .slogan { color: #fef3c7; text-align: center; font-style: italic; margin-bottom: 2rem; }
+      .card { background: white; border-radius: 16px; padding: 2rem; margin-bottom: 1.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
+      h2 { color: #16a34a; margin-bottom: 1rem; }
+      label { display: block; font-weight: 600; margin-bottom: 0.25rem; font-size: 0.9rem; }
+      input, select, textarea { width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; margin-bottom: 1rem; font-size: 1rem; }
+      input:focus, select:focus, textarea:focus { outline: none; border-color: #16a34a; }
+      button { background: #16a34a; color: white; border: none; padding: 0.75rem 2rem; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; }
+      button:hover { background: #15803d; }
+      .hidden { display: none; }
+      table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+      th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid #e5e7eb; }
+      th { background: #f0fdf4; color: #16a34a; }
+      .mensaje { padding: 1rem; border-radius: 8px; margin-bottom: 1rem; }
+      .mensaje.exito { background: #d1fae5; color: #065f46; }
+      .mensaje.error { background: #fee2e2; color: #991b1b; }
+      .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 1rem; }
+      .stat-card { padding: 1rem; border-radius: 8px; text-align: center; }
+      .stat-card.green { background: #f0fdf4; border: 2px solid #bbf7d0; }
+      .stat-card.amber { background: #fef3c7; border: 2px solid #fcd34d; }
+      .stat-card.blue { background: #dbeafe; border: 2px solid #93c5fd; }
+      .stat-card .number { font-size: 2rem; font-weight: bold; }
+      .stat-card.green .number { color: #16a34a; }
+      .stat-card.amber .number { color: #d97706; }
+      .stat-card.blue .number { color: #2563eb; }
+      .stat-card .label { color: #6b7280; font-size: 0.875rem; }
+      a { color: #16a34a; text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .tab-container { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+      .tab-btn { padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; background: #e5e7eb; border: none; width: auto; }
+      .tab-btn.active { background: #16a34a; color: white; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🌱 Vivero Escolar Inteligente</h1>
+      <p class="slogan">"Cada semilla, un registro; cada riego, un cuidado"</p>
+      
+      <!-- PANTALLA DE LOGIN -->
+      <div id="pantalla-login" class="card">
+        <h2> Iniciar Sesión</h2>
+        <div id="mensaje-login"></div>
+        <input type="email" id="login-correo" placeholder="Correo electrónico">
+        <input type="password" id="login-contrasena" placeholder="Contraseña">
+        <button onclick="iniciarSesion()">Ingresar</button>
+        <p style="text-align: center; margin-top: 1rem;">¿No tienes cuenta? <a href="#" onclick="mostrarRegistro(); return false;">Regístrate aquí</a></p>
+      </div>
+      
+      <!-- PANTALLA DE REGISTRO -->
+      <div id="pantalla-registro" class="card hidden">
+        <h2>📝 Crear Cuenta</h2>
+        <div id="mensaje-registro"></div>
+        <input type="text" id="registro-nombre" placeholder="Nombre completo">
+        <input type="email" id="registro-correo" placeholder="Correo electrónico">
+        <input type="password" id="registro-contrasena" placeholder="Contraseña (mín. 6 caracteres)">
+        <button onclick="registrar()">Crear cuenta</button>
+        <p style="text-align: center; margin-top: 1rem;">¿Ya tienes cuenta? <a href="#" onclick="mostrarLogin(); return false;">Inicia sesión</a></p>
+      </div>
+      
+      <!-- PANTALLA PRINCIPAL -->
+      <div id="pantalla-principal" class="hidden">
+        <div class="card">
+          <h2>👋 Hola, <span id="nombre-usuario"></span></h2>
+          <button onclick="cerrarSesion()" style="background: #dc2626; width: auto; padding: 0.5rem 1rem; margin-bottom: 1rem;">Cerrar sesión</button>
+        </div>
+        
+        <!-- REPORTE DEL VIVERO -->
+        <div class="card">
+          <h2>📊 Reporte del Vivero</h2>
+          <div class="stats-grid">
+            <div class="stat-card green"><div class="number" id="total-semillas">0</div><div class="label">Tipos de semillas</div></div>
+            <div class="stat-card green"><div class="number" id="total-siembras">0</div><div class="label">Siembras activas</div></div>
+            <div class="stat-card blue"><div class="number" id="total-riegos">0</div><div class="label">Riegos realizados</div></div>
+            <div class="stat-card amber"><div class="number" id="total-litros">0 L</div><div class="label">Litros usados</div></div>
+            <div class="stat-card amber"><div class="number" id="riegos-pendientes">0</div><div class="label">Riegos pendientes</div></div>
+          </div>
+          <p id="mensaje-reporte" style="margin-top: 1rem; color: #16a34a; font-weight: 600; text-align: center;"></p>
+        </div>
+        
+        <!-- TABS DE FUNCIONALIDADES -->
+        <div class="card">
+          <div class="tab-container">
+            <button class="tab-btn active" onclick="mostrarTab('semillas')">🌱 Semillas</button>
+            <button class="tab-btn" onclick="mostrarTab('siembras')">🌿 Siembras</button>
+            <button class="tab-btn" onclick="mostrarTab('riegos')">💧 Riegos</button>
+          </div>
+          
+          <!-- TAB SEMILLAS -->
+          <div id="tab-semillas">
+            <h2>🌱 Registrar Nueva Semilla</h2>
+            <div id="mensaje-semilla"></div>
+            <label>Nombre común</label>
+            <input type="text" id="semilla-nombre" placeholder="Ej: Tomate cherry">
+            <label>Nombre científico</label>
+            <input type="text" id="semilla-cientifico" placeholder="Ej: Solanum lycopersicum">
+            <label>Tipo</label>
+            <select id="semilla-tipo">
+              <option value="hortaliza">Hortaliza</option>
+              <option value="fruta">Fruta</option>
+              <option value="flor">Flor</option>
+              <option value="aromatica">Aromática</option>
+              <option value="otro">Otro</option>
+            </select>
+            <label>Temporada de siembra</label>
+            <input type="text" id="semilla-temporada" placeholder="Ej: Primavera, Todo el año">
+            <button onclick="guardarSemilla()">💾 Guardar semilla</button>
+            <h3 style="margin-top: 1.5rem; color: #a16207;">Catálogo de semillas</h3>
+            <table>
+              <thead><tr><th>Nombre</th><th>Científico</th><th>Tipo</th><th>Temporada</th><th>Acciones</th></tr></thead>
+              <tbody id="lista-semillas"></tbody>
+            </table>
+          </div>
+          
+          <!-- TAB SIEMBRAS -->
+          <div id="tab-siembras" class="hidden">
+            <h2>🌿 Registrar Nueva Siembra</h2>
+            <div id="mensaje-siembra"></div>
+            <label>Semilla</label>
+            <select id="siembra-semilla" required><option value="">Selecciona una semilla...</option></select>
+            <label>Fecha de siembra</label>
+            <input type="date" id="siembra-fecha" required>
+            <label>Cantidad de semillas</label>
+            <input type="number" id="siembra-cantidad" min="1" placeholder="Ej: 10" required>
+            <label>Ubicación en el vivero</label>
+            <input type="text" id="siembra-ubicacion" placeholder="Ej: Cama 1, Maceta 3">
+            <label>Responsable</label>
+            <input type="text" id="siembra-responsable" placeholder="Nombre del estudiante">
+            <button onclick="guardarSiembra()" style="background: #84cc16;">🌿 Registrar siembra</button>
+            <h3 style="margin-top: 1.5rem; color: #a16207;">Siembras registradas</h3>
+            <table>
+              <thead><tr><th>Semilla</th><th>Fecha</th><th>Cantidad</th><th>Ubicación</th><th>Responsable</th></tr></thead>
+              <tbody id="lista-siembras"></tbody>
+            </table>
+          </div>
+          
+          <!-- TAB RIEGOS -->
+          <div id="tab-riegos" class="hidden">
+            <h2>💧 Registrar Nuevo Riego</h2>
+            <div id="mensaje-riego"></div>
+            <label>Siembra</label>
+            <select id="riego-siembra" required><option value="">Selecciona una siembra...</option></select>
+            <label>Fecha de riego</label>
+            <input type="date" id="riego-fecha" required>
+            <label>Cantidad de litros</label>
+            <input type="number" id="riego-litros" step="0.1" min="0" placeholder="Ej: 2.5" required>
+            <label>Responsable</label>
+            <input type="text" id="riego-responsable" placeholder="Nombre del estudiante">
+            <label>Observaciones</label>
+            <textarea id="riego-observaciones" rows="3" placeholder="Ej: Planta con buen crecimiento"></textarea>
+            <button onclick="guardarRiego()" style="background: #2563eb;">💧 Registrar riego</button>
+            <h3 style="margin-top: 1.5rem; color: #a16207;">Riegos registrados</h3>
+            <table>
+              <thead><tr><th>Fecha</th><th>Ubicación</th><th>Litros</th><th>Responsable</th><th>Observaciones</th></tr></thead>
+              <tbody id="lista-riegos"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <script>
+      let usuarioActual = null;
+      
+      function mostrarLogin() {
+        document.getElementById('pantalla-login').classList.remove('hidden');
+        document.getElementById('pantalla-registro').classList.add('hidden');
+        document.getElementById('mensaje-login').innerHTML = '';
+      }
+      
+      function mostrarRegistro() {
+        document.getElementById('pantalla-login').classList.add('hidden');
+        document.getElementById('pantalla-registro').classList.remove('hidden');
+        document.getElementById('mensaje-registro').innerHTML = '';
+      }
+      
+      function mostrarPrincipal() {
+        document.getElementById('pantalla-login').classList.add('hidden');
+        document.getElementById('pantalla-registro').classList.add('hidden');
+        document.getElementById('pantalla-principal').classList.remove('hidden');
+        cargarSemillas();
+        actualizarSelectSemillas();
+        cargarSiembras();
+        actualizarSelectSiembras();
+        cargarRiegos();
+        cargarReporte();
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('siembra-fecha').value = today;
+        document.getElementById('riego-fecha').value = today;
+      }
+      
+      function mostrarTab(tab) {
+        document.getElementById('tab-semillas').classList.add('hidden');
+        document.getElementById('tab-siembras').classList.add('hidden');
+        document.getElementById('tab-riegos').classList.add('hidden');
+        document.getElementById('tab-' + tab).classList.remove('hidden');
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+      }
+      
+      function iniciarSesion() {
+        const correo = document.getElementById('login-correo').value;
+        const contrasena = document.getElementById('login-contrasena').value;
+        if (!correo || !contrasena) {
+          mostrarMensaje('mensaje-login', 'Por favor ingresa correo y contraseña', 'error');
+          return;
+        }
+        google.script.run
+          .withSuccessHandler(function(resultado) {
+            if (resultado.exito) {
+              usuarioActual = resultado.usuario;
+              document.getElementById('nombre-usuario').textContent = resultado.usuario.nombre;
+              mostrarPrincipal();
+            } else {
+              mostrarMensaje('mensaje-login', resultado.mensaje, 'error');
+            }
+          })
+          .withFailureHandler(function(error) {
+            mostrarMensaje('mensaje-login', 'Error: ' + error.message, 'error');
+          })
+          .verificarLogin(correo, contrasena);
+      }
+      
+      function registrar() {
+        const nombre = document.getElementById('registro-nombre').value.trim();
+        const correo = document.getElementById('registro-correo').value.trim();
+        const contrasena = document.getElementById('registro-contrasena').value;
+        if (!nombre || !correo || !contrasena) {
+          mostrarMensaje('mensaje-registro', 'Por favor completa todos los campos', 'error');
+          return;
+        }
+        if (contrasena.length < 6) {
+          mostrarMensaje('mensaje-registro', 'La contraseña debe tener al menos 6 caracteres', 'error');
+          return;
+        }
+        google.script.run
+          .withSuccessHandler(function(resultado) {
+            if (resultado.exito) {
+              mostrarMensaje('mensaje-registro', resultado.mensaje, 'exito');
+              setTimeout(mostrarLogin, 2000);
+            } else {
+              mostrarMensaje('mensaje-registro', resultado.mensaje, 'error');
+            }
+          })
+          .registrarUsuario(nombre, correo, contrasena);
+      }
+      
+      function cerrarSesion() {
+        usuarioActual = null;
+        mostrarLogin();
+      }
+      
+      function guardarSemilla() {
+        const nombre = document.getElementById('semilla-nombre').value.trim();
+        const cientifico = document.getElementById('semilla-cientifico').value.trim();
+        const tipo = document.getElementById('semilla-tipo').value;
+        const temporada = document.getElementById('semilla-temporada').value.trim();
+        if (!nombre) {
+          mostrarMensaje('mensaje-semilla', 'El nombre es obligatorio', 'error');
+          return;
+        }
+        google.script.run
+          .withSuccessHandler(function(resultado) {
+            if (resultado.exito) {
+              mostrarMensaje('mensaje-semilla', resultado.mensaje, 'exito');
+              document.getElementById('semilla-nombre').value = '';
+              document.getElementById('semilla-cientifico').value = '';
+              document.getElementById('semilla-temporada').value = '';
+              cargarSemillas();
+              actualizarSelectSemillas();
+            } else {
+              mostrarMensaje('mensaje-semilla', resultado.mensaje, 'error');
+            }
+          })
+          .crearSemilla(nombre, cientifico, tipo, temporada);
+      }
+      
+      function cargarSemillas() {
+        google.script.run
+          .withSuccessHandler(function(semillas) {
+            const tbody = document.getElementById('lista-semillas');
+            if (!semillas || semillas.length === 0) {
+              tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#999;">No hay semillas</td></tr>';
+            } else {
+              tbody.innerHTML = semillas.map(function(s) {
+                return '<tr><td>' + (s.nombreComun || '') + '</td><td><em>' + (s.nombreCientifico || '') + '</em></td><td>' + (s.tipo || '') + '</td><td>' + (s.temporada || '') + '</td><td><button onclick="eliminarSemilla(' + s.id + ')" style="background:#dc2626; padding:0.25rem 0.75rem; width:auto;">🗑️</button></td></tr>';
+              }).join('');
+            }
+          })
+          .listarSemillas();
+      }
+      
+      function actualizarSelectSemillas() {
+        google.script.run
+          .withSuccessHandler(function(semillas) {
+            const select = document.getElementById('siembra-semilla');
+            let html = '<option value="">Selecciona una semilla...</option>';
+            if (semillas && semillas.length > 0) {
+              semillas.forEach(function(s) {
+                html += '<option value="' + s.id + '">' + s.nombreComun + ' (' + s.nombreCientifico + ')</option>';
+              });
+            }
+            select.innerHTML = html;
+          })
+          .listarSemillas();
+      }
+      
+      function eliminarSemilla(id) {
+        if (!confirm('¿Eliminar esta semilla?')) return;
+        google.script.run
+          .withSuccessHandler(function() { cargarSemillas(); actualizarSelectSemillas(); })
+          .eliminarSemilla(id);
+      }
+      
+      function guardarSiembra() {
+        const semillaId = document.getElementById('siembra-semilla').value;
+        const fecha = document.getElementById('siembra-fecha').value;
+        const cantidad = document.getElementById('siembra-cantidad').value;
+        const ubicacion = document.getElementById('siembra-ubicacion').value.trim();
+        const responsable = document.getElementById('siembra-responsable').value.trim();
+        if (!semillaId || !fecha || !cantidad) {
+          mostrarMensaje('mensaje-siembra', '️ Completa todos los campos obligatorios', 'error');
+          return;
+        }
+        google.script.run
+          .withSuccessHandler(function(resultado) {
+            if (resultado.exito) {
+              mostrarMensaje('mensaje-siembra', resultado.mensaje, 'exito');
+              document.getElementById('siembra-cantidad').value = '';
+              document.getElementById('siembra-ubicacion').value = '';
+              document.getElementById('siembra-responsable').value = '';
+              cargarSiembras();
+              actualizarSelectSiembras();
+              cargarReporte();
+            } else {
+              mostrarMensaje('mensaje-siembra', resultado.mensaje, 'error');
+            }
+          })
+          .crearSiembra(semillaId, fecha, cantidad, ubicacion, responsable);
+      }
+      
+      function cargarSiembras() {
+        google.script.run
+          .withSuccessHandler(function(siembras) {
+            const tbody = document.getElementById('lista-siembras');
+            if (!siembras || siembras.length === 0) {
+              tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#999;">No hay siembras</td></tr>';
+            } else {
+              tbody.innerHTML = siembras.map(function(s) {
+                return '<tr><td>' + (s.nombreSemilla || '') + '</td><td>' + (s.fecha || '') + '</td><td>' + (s.cantidad || 0) + '</td><td>' + (s.ubicacion || 'N/A') + '</td><td>' + (s.responsable || 'N/A') + '</td></tr>';
+              }).join('');
+            }
+          })
+          .listarSiembras();
+      }
+      
+      function actualizarSelectSiembras() {
+  google.script.run
+    .withSuccessHandler(function(siembras) {
+      const select = document.getElementById('riego-siembra');
+      let html = '<option value="">Selecciona una siembra...</option>';
+      
+      if (siembras && siembras.length > 0) {
+        siembras.forEach(function(s) {
+          const nombre = s.nombreSemilla || 'Siembra';
+          const ubica = s.ubicacion ? (' - ' + s.ubicacion) : '';
+          html += '<option value="' + s.id + '">ID: ' + s.id + ' | ' + nombre + ubica + '</option>';
+        });
+      } else {
+        html += '<option value="" disabled>No hay siembras registradas</option>';
+      }
+      
+      select.innerHTML = html;
+    })
+    .withFailureHandler(function(err) {
+      console.error('Error al cargar siembras en select:', err);
+    })
+    .listarSiembras();
+}
+      
+      function guardarRiego() {
+        const siembraId = document.getElementById('riego-siembra').value;
+        const fecha = document.getElementById('riego-fecha').value;
+        const litros = document.getElementById('riego-litros').value;
+        const responsable = document.getElementById('riego-responsable').value.trim();
+        const observaciones = document.getElementById('riego-observaciones').value.trim();
+        if (!siembraId || !fecha || !litros) {
+          mostrarMensaje('mensaje-riego', '⚠️ Completa todos los campos obligatorios', 'error');
+          return;
+        }
+        google.script.run
+          .withSuccessHandler(function(resultado) {
+            if (resultado.exito) {
+              mostrarMensaje('mensaje-riego', '✅ Riego registrado: ' + resultado.riego.cantidadLitros + ' litros', 'exito');
+              document.getElementById('riego-litros').value = '';
+              document.getElementById('riego-responsable').value = '';
+              document.getElementById('riego-observaciones').value = '';
+              cargarRiegos();
+              cargarReporte();
+            } else {
+              mostrarMensaje('mensaje-riego', resultado.mensaje, 'error');
+            }
+          })
+          .crearRiego(siembraId, fecha, litros, responsable, observaciones);
+      }
+      
+      function cargarRiegos() {
+        google.script.run
+          .withSuccessHandler(function(riegos) {
+            const tbody = document.getElementById('lista-riegos');
+            if (!riegos || riegos.length === 0) {
+              tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#999;">No hay riegos</td></tr>';
+            } else {
+              tbody.innerHTML = riegos.map(function(r) {
+                return '<tr><td>' + (r.fecha || '') + '</td><td>' + (r.ubicacion || '') + '</td><td>' + (r.cantidadLitros || 0) + ' L</td><td>' + (r.responsable || 'N/A') + '</td><td>' + (r.observaciones || 'N/A') + '</td></tr>';
+              }).join('');
+            }
+          })
+          .listarRiegos();
+      }
+      
+      function cargarReporte() {
+        google.script.run
+          .withSuccessHandler(function(reporte) {
+            document.getElementById('total-semillas').textContent = reporte.totalSemillas || 0;
+            document.getElementById('total-siembras').textContent = reporte.totalSiembras || 0;
+            document.getElementById('total-riegos').textContent = reporte.totalRiegos || 0;
+            document.getElementById('total-litros').textContent = (reporte.totalLitros || 0) + ' L';
+            document.getElementById('riegos-pendientes').textContent = reporte.riegosPendientes || 0;
+            document.getElementById('mensaje-reporte').textContent = reporte.mensaje || '';
+          })
+          .obtenerReporte();
+      }
+      
+      function mostrarMensaje(id, texto, tipo) {
+        const div = document.getElementById(id);
+        div.innerHTML = '<div class="mensaje ' + tipo + '">' + texto + '</div>';
+        setTimeout(function() { div.innerHTML = ''; }, 5000);
+      }
+    </script>
+  </body>
+</html>
